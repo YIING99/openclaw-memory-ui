@@ -4,6 +4,16 @@ A lightweight web interface for managing [OpenClaw](https://github.com/nicepkg/o
 
 **[中文说明](#中文说明)**
 
+## Screenshots
+
+| Home | View | Edit |
+|------|------|------|
+| ![Home](screenshots/home.jpg) | ![View](screenshots/view.jpg) | ![Edit](screenshots/edit.jpg) |
+
+| Search | New Record | Detail View |
+|--------|------------|-------------|
+| ![Search](screenshots/search.jpg) | ![New](screenshots/new.jpg) | ![Detail](screenshots/view-detail.jpg) |
+
 ---
 
 ## Features
