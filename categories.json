@@ -1,0 +1,20 @@
+{
+  "Notes": {
+    "prefix": "NOTE",
+    "categories": ["Technical", "Research", "Ideas"],
+    "subcategories": {
+      "Technical": ["Backend", "Frontend", "DevOps"],
+      "Research": ["Papers", "Articles", "Books"],
+      "Ideas": ["Projects", "Features", "Experiments"]
+    }
+  },
+  "References": {
+    "prefix": "REF",
+    "categories": ["Documentation", "Tutorials", "Best Practices"],
+    "subcategories": {
+      "Documentation": ["API Docs", "Architecture", "Guides"],
+      "Tutorials": ["Beginner", "Advanced"],
+      "Best Practices": ["Security", "Performance", "Testing"]
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}浏览 {{ subpath or '全部' }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <a href="{{ url_for('browse') }}">全部</a>
+        {% if subpath %}
+        {% set parts = subpath.split('/') %}
+        {% for part in parts %}
+        / <a href="{{ url_for('browse', subpath='/'.join(parts[:loop.index])) }}">{{ part }}</a>
+        {% endfor %}
+        {% endif %}
+    </h1>
+    <span class="badge">{{ total }} 条</span>
+</div>
+
+{% if subdirs %}
+<section class="section">
+    <h2>子目录</h2>
+    <div class="dir-grid">
+        {% for d in subdirs %}
+        <a href="{{ url_for('browse', subpath=(subpath + '/' + d if subpath else d)) }}" class="dir-card">
+            <span class="dir-icon">&#128193;</span>
+            <span class="dir-name">{{ d }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if files %}
+<section class="section">
+    <h2>文件</h2>
+    <div class="file-list">
+        {% for file_id, entry in files %}
+        <a href="{{ url_for('view', file_id=file_id) }}" class="file-item">
+            <div class="file-title">
+                {{ entry.title or file_id }}
+                {% if entry.review_status %}
+                <span class="badge badge-{{ 'success' if entry.review_status in config.APPROVED_STATUSES else 'warning' }}">
+                    {{ entry.review_status }}
+                </span>
+                {% endif %}
+            </div>
+            <div class="file-meta">
+                {% if entry.category %}<span>{{ entry.category }}</span>{% endif %}
+                <span>{{ entry.modified }}</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if not subdirs and not files %}
+<p class="empty-state">此目录为空</p>
+{% endif %}
+{% endblock %}

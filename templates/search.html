@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}搜索{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>搜索知识库</h1>
+</div>
+
+<form method="GET" class="search-form">
+    <div class="search-bar">
+        <input type="text" name="q" value="{{ query }}" placeholder="输入关键词搜索..." autofocus>
+        <button type="submit" class="btn btn-primary">搜索</button>
+    </div>
+</form>
+
+{% if query %}
+<p class="search-info">找到 {{ results|length }} 条结果</p>
+{% endif %}
+
+{% if results %}
+<div class="file-list">
+    {% for item in results %}
+    <a href="{{ url_for('view', file_id=item.id) }}" class="file-item">
+        <div class="file-title">
+            {{ item.title }}
+            {% if item.review_status %}
+            <span class="badge badge-{{ 'success' if item.review_status in config.APPROVED_STATUSES else 'warning' }}">
+                {{ item.review_status }}
+            </span>
+            {% endif %}
+        </div>
+        {% if item.snippet %}
+        <div class="file-snippet">{{ item.snippet }}</div>
+        {% endif %}
+        <div class="file-meta">
+            <span>匹配度: {{ item.score }}</span>
+            {% if item.modified %}<span>{{ item.modified }}</span>{% endif %}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% elif query %}
+<p class="empty-state">没有找到匹配的内容</p>
+{% endif %}
+{% endblock %}

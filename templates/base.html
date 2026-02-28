@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Memory UI{% endblock %} - {{ config.APP_TITLE }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% if session.get('logged_in') %}
+    <nav class="navbar">
+        <a href="{{ url_for('index_page') }}" class="nav-brand">{{ config.APP_TITLE }}</a>
+        <div class="nav-links">
+            <a href="{{ url_for('index_page') }}">首页</a>
+            <a href="{{ url_for('browse') }}">浏览</a>
+            <a href="{{ url_for('search') }}">搜索</a>
+            {% if config.ENABLE_REVIEW %}
+            <a href="{{ url_for('review_page') }}">审核</a>
+            {% endif %}
+            <a href="{{ url_for('new_file') }}">+ 新建</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">退出</a>
+        </div>
+        <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('show')">&#9776;</button>
+    </nav>
+    {% endif %}
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>{{ config.APP_TITLE }} &middot; {{ config.APP_SUBTITLE }}</p>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
