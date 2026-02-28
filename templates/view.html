@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ metadata.get('title', file_id) }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ metadata.get('title', file_id) }}</h1>
+    <div class="header-actions">
+        <a href="{{ url_for('edit', file_id=file_id) }}" class="btn btn-primary">编辑</a>
+        <form method="POST" action="{{ url_for('delete_file', file_id=file_id) }}" style="display:inline">
+            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定删除？此操作不可撤销。')">删除</button>
+        </form>
+    </div>
+</div>
+
+<!-- Metadata card -->
+{% if metadata %}
+<div class="meta-card">
+    <div class="meta-grid">
+        {% if metadata.get('id') %}<div class="meta-item"><span class="meta-label">编号</span><span>{{ metadata.id }}</span></div>{% endif %}
+        {% if metadata.get('source') %}<div class="meta-item"><span class="meta-label">来源</span><span>{{ metadata.source }}</span></div>{% endif %}
+        {% if metadata.get('category') %}<div class="meta-item"><span class="meta-label">分类</span><span>{{ metadata.category }}</span></div>{% endif %}
+        {% if metadata.get('subcategory') %}<div class="meta-item"><span class="meta-label">子分类</span><span>{{ metadata.subcategory }}</span></div>{% endif %}
+        {% if metadata.get('review_status') %}
+        <div class="meta-item">
+            <span class="meta-label">审核状态</span>
+            <span class="badge badge-{{ 'success' if metadata.review_status in config.APPROVED_STATUSES else 'warning' }}">
+                {{ metadata.review_status }}
+            </span>
+        </div>
+        {% endif %}
+        {% if metadata.get('tags') %}
+        <div class="meta-item">
+            <span class="meta-label">标签</span>
+            <span>{% for tag in metadata.tags %}<span class="tag">{{ tag }}</span>{% endfor %}</span>
+        </div>
+        {% endif %}
+        {% if metadata.get('created') %}<div class="meta-item"><span class="meta-label">创建</span><span>{{ metadata.created }}</span></div>{% endif %}
+        {% if metadata.get('modified') %}<div class="meta-item"><span class="meta-label">修改</span><span>{{ metadata.modified }}</span></div>{% endif %}
+        {% if metadata.get('version') %}<div class="meta-item"><span class="meta-label">版本</span><span>v{{ metadata.version }}</span></div>{% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Markdown content -->
+<article class="md-content">
+    {{ html_content|safe }}
+</article>
+{% endblock %}

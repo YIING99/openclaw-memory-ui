@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}待审核{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>待审核队列</h1>
+    <span class="badge">{{ pending|length }} 条</span>
+</div>
+
+{% if pending %}
+<div class="file-list">
+    {% for file_id, entry in pending %}
+    <div class="file-item review-item">
+        <div class="file-title">
+            <a href="{{ url_for('view', file_id=file_id) }}">{{ entry.title or file_id }}</a>
+            <span class="badge badge-warning">{{ entry.review_status }}</span>
+        </div>
+        <div class="file-meta">
+            {% if entry.source %}<span>{{ entry.source }}</span>{% endif %}
+            {% if entry.category %}<span>{{ entry.category }}</span>{% endif %}
+            <span>{{ entry.modified }}</span>
+        </div>
+        <div class="review-actions">
+            <form method="POST" action="{{ url_for('approve', file_id=file_id) }}" style="display:inline">
+                <button type="submit" class="btn btn-success btn-sm">通过</button>
+            </form>
+            <form method="POST" action="{{ url_for('reject', file_id=file_id) }}" style="display:inline">
+                <button type="submit" class="btn btn-danger btn-sm">驳回</button>
+            </form>
+            <a href="{{ url_for('edit', file_id=file_id) }}" class="btn btn-sm">编辑</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="empty-state">没有待审核的内容</p>
+{% endif %}
+{% endblock %}

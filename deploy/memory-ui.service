@@ -1,0 +1,24 @@
+# OpenClaw Memory Web UI — systemd service template
+# Copy to: ~/.config/systemd/user/memory-ui.service (user mode)
+# Or to: /etc/systemd/system/memory-ui.service (system mode, change User/Group)
+#
+# Usage:
+#   systemctl --user daemon-reload
+#   systemctl --user enable memory-ui
+#   systemctl --user start memory-ui
+#   systemctl --user status memory-ui
+
+[Unit]
+Description=OpenClaw Memory Web UI
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/memory-ui
+EnvironmentFile=/opt/memory-ui/.env
+ExecStart=/opt/memory-ui/venv/bin/gunicorn -c gunicorn.conf.py app:app
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

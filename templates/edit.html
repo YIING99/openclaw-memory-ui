@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}{{ '新建' if is_new else '编辑 ' + file_id }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ '新建知识记录' if is_new else '编辑: ' + metadata.get('title', file_id) }}</h1>
+</div>
+
+<form method="POST" class="edit-form">
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="title">标题 *</label>
+            <input type="text" id="title" name="title" value="{{ metadata.get('title', '') }}" required>
+        </div>
+
+        {% if categories %}
+        <div class="form-group">
+            <label for="source">来源库</label>
+            <select id="source" name="source" onchange="updateCategories()">
+                <option value="">-- 选择来源 --</option>
+                {% for src_name in categories %}
+                <option value="{{ src_name }}" {{ 'selected' if metadata.get('source') == src_name }}>{{ src_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="category">分类</label>
+            <select id="category" name="category" onchange="updateSubcategories()">
+                <option value="">-- 选择分类 --</option>
+                {% if metadata.get('category') %}
+                <option value="{{ metadata.category }}" selected>{{ metadata.category }}</option>
+                {% endif %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="subcategory">子分类</label>
+            <select id="subcategory" name="subcategory">
+                <option value="">-- 选择子分类 --</option>
+                {% if metadata.get('subcategory') %}
+                <option value="{{ metadata.subcategory }}" selected>{{ metadata.subcategory }}</option>
+                {% endif %}
+            </select>
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="tags">标签（逗号分隔）</label>
+            <input type="text" id="tags" name="tags" value="{{ metadata.get('tags', [])|join(', ') }}">
+        </div>
+
+        {% if config.ENABLE_REVIEW %}
+        <div class="form-group">
+            <label for="review_status">审核状态</label>
+            <select id="review_status" name="review_status">
+                <option value="">未设置</option>
+                {% for rs in review_statuses %}
+                <option value="{{ rs }}" {{ 'selected' if metadata.get('review_status') == rs }}>{{ rs }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        <label for="content">内容（Markdown）</label>
+        <textarea id="content" name="content" rows="20">{{ content }}</textarea>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">保存</button>
+        {% if not is_new %}
+        <a href="{{ url_for('view', file_id=file_id) }}" class="btn">取消</a>
+        {% else %}
+        <a href="{{ url_for('index_page') }}" class="btn">取消</a>
+        {% endif %}
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+{% if categories %}
+<script>
+const CATEGORIES = {{ categories|tojson }};
+
+function updateCategories() {
+    const source = document.getElementById('source').value;
+    const catSelect = document.getElementById('category');
+    const subSelect = document.getElementById('subcategory');
+    catSelect.length = 1;
+    subSelect.length = 1;
+    if (source && CATEGORIES[source]) {
+        CATEGORIES[source].categories.forEach(function(c) {
+            const opt = new Option(c, c);
+            catSelect.add(opt);
+        });
+    }
+}
+
+function updateSubcategories() {
+    const source = document.getElementById('source').value;
+    const category = document.getElementById('category').value;
+    const subSelect = document.getElementById('subcategory');
+    subSelect.length = 1;
+    if (source && category && CATEGORIES[source] && CATEGORIES[source].subcategories[category]) {
+        CATEGORIES[source].subcategories[category].forEach(function(sc) {
+            const opt = new Option(sc, sc);
+            subSelect.add(opt);
+        });
+    }
+}
+
+{% if metadata.get('source') %}
+updateCategories();
+document.getElementById('category').value = '{{ metadata.get("category", "") }}';
+updateSubcategories();
+document.getElementById('subcategory').value = '{{ metadata.get("subcategory", "") }}';
+{% endif %}
+</script>
+{% endif %}
+{% endblock %}
