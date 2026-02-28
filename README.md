@@ -61,6 +61,7 @@ All settings are controlled via environment variables. Copy `.env.example` to `.
 | `PORT` | `5000` | Dev server port |
 | `BIND` | `127.0.0.1:5000` | Gunicorn bind address |
 | `WORKERS` | `2` | Gunicorn worker count |
+| `REINDEX_COMMAND` | `npx openclaw memory index --force` | Shell command to run after edits (set empty to disable) |
 | `REINDEX_TIMEOUT` | `120` | Re-index command timeout (seconds) |
 
 ### Generate Password Hash

@@ -168,14 +168,18 @@ def render_markdown(text):
 
 
 def trigger_reindex():
-    """Trigger OpenClaw memory re-index in background thread"""
+    """Trigger post-edit command (e.g. search index rebuild) in background thread"""
+    if not config.REINDEX_COMMAND:
+        return
+
     def _reindex():
         try:
             env = os.environ.copy()
             env["HOME"] = config.OPENCLAW_HOME
             subprocess.run(
-                ["npx", "openclaw", "memory", "index", "--force"],
-                cwd=config.OPENCLAW_DIR,
+                config.REINDEX_COMMAND,
+                shell=True,
+                cwd=config.MEMORY_DIR,
                 env=env,
                 capture_output=True,
                 text=True,
