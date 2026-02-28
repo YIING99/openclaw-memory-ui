@@ -278,8 +278,8 @@ def login():
         if pw_hash == config.PASSWORD_HASH:
             session.permanent = True
             session["logged_in"] = True
-            next_url = request.args.get("next", "/")
-            return redirect(next_url)
+            next_url = request.args.get("next", "")
+            return redirect(next_url or url_for("index_page"))
         flash("密码错误", "error")
     return render_template("login.html")
 
