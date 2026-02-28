@@ -53,4 +53,9 @@ else:
     CATEGORIES = {}
 
 # === Re-index Configuration ===
+# Custom command to run after edits (e.g. rebuild search index).
+# Default: OpenClaw memory index. Set to empty string to disable.
+# Example: "npx openclaw memory index --force"
+# Example: "python3 /path/to/rebuild.py"
+REINDEX_COMMAND = os.environ.get("REINDEX_COMMAND", "npx openclaw memory index --force")
 REINDEX_TIMEOUT = int(os.environ.get("REINDEX_TIMEOUT", "120"))
