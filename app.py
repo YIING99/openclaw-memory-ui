@@ -283,7 +283,10 @@ def login():
             session.permanent = True
             session["logged_in"] = True
             next_url = request.args.get("next", "")
-            return redirect(next_url or url_for("index_page"))
+            if next_url:
+                # Prepend SCRIPT_NAME for sub-path deployment (e.g. /memory)
+                return redirect(request.script_root + next_url)
+            return redirect(url_for("index_page"))
         flash("密码错误", "error")
     return render_template("login.html")
 
