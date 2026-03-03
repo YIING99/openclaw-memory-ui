@@ -1,0 +1,67 @@
+{
+  "name": "memory-ui",
+  "version": "1.2.0",
+  "description": "Markdown Knowledge Base Web UI — browse, search, edit, and organize .md files",
+  "repository": "https://github.com/YIING99/openclaw-memory-ui",
+  "license": "MIT",
+  "install": {
+    "method": "bash",
+    "command": "bash <(curl -sSL https://raw.githubusercontent.com/YIING99/openclaw-memory-ui/main/quick-install.sh)",
+    "docs": "https://github.com/YIING99/openclaw-memory-ui/blob/main/AGENT_INSTALL.md",
+    "required_params": [
+      {
+        "flag": "--password",
+        "description": "Login password (will be SHA256 hashed)",
+        "ask_user": true
+      }
+    ],
+    "optional_params": [
+      {"flag": "--install-dir", "default": "~/memory-ui", "description": "Installation directory"},
+      {"flag": "--memory-dir", "default": "~/memory", "description": "Markdown files directory"},
+      {"flag": "--language", "default": "en", "description": "UI language (en or zh)"},
+      {"flag": "--port", "default": "5000", "description": "Gunicorn listen port"},
+      {"flag": "--app-title", "default": "Memory UI", "description": "Brand name in navbar"},
+      {"flag": "--app-subtitle", "default": "Markdown Knowledge Base", "description": "Subtitle in footer"},
+      {"flag": "--enable-review", "default": "true", "description": "Enable review workflow"},
+      {"flag": "--review-statuses", "default": "pending,in_review,approved,needs_revision,published", "description": "Comma-separated review status values"},
+      {"flag": "--drafts-folder", "default": "drafts", "description": "Folder for draft files"},
+      {"flag": "--reindex-cmd", "default": "", "description": "Shell command after edits (empty=disabled)"},
+      {"flag": "--nginx-path", "default": "", "description": "Nginx sub-path (e.g. /memory)"},
+      {"flag": "--preset", "default": "", "description": "Template pack: ai-agent, dev-notes, or personal"}
+    ],
+    "auto_detect": {
+      "openclaw_memory": {
+        "description": "Detect existing OpenClaw memory directory",
+        "command": "for d in ~/.openclaw/workspace/memory ~/y1home/.openclaw/workspace/memory; do [ -d \"$d\" ] && echo $d && break; done",
+        "maps_to": "--memory-dir"
+      }
+    }
+  },
+  "verify": {
+    "service_active": {
+      "command": "systemctl --user is-active memory-ui",
+      "expected": "active"
+    },
+    "http_status": {
+      "command": "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:{port}/login",
+      "expected": "200"
+    }
+  },
+  "manage": {
+    "start": "systemctl --user start memory-ui",
+    "stop": "systemctl --user stop memory-ui",
+    "restart": "systemctl --user restart memory-ui",
+    "status": "systemctl --user status memory-ui",
+    "logs": "journalctl --user -u memory-ui -n 50 --no-pager"
+  },
+  "uninstall": {
+    "commands": [
+      "systemctl --user stop memory-ui",
+      "systemctl --user disable memory-ui",
+      "rm ~/.config/systemd/user/memory-ui.service",
+      "systemctl --user daemon-reload",
+      "rm -rf ~/memory-ui"
+    ],
+    "note": "Memory files in --memory-dir are NOT deleted"
+  }
+}
