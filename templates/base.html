@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,14 +12,14 @@
     <nav class="navbar">
         <a href="{{ url_for('index_page') }}" class="nav-brand">{{ config.APP_TITLE }}</a>
         <div class="nav-links">
-            <a href="{{ url_for('index_page') }}">首页</a>
-            <a href="{{ url_for('browse') }}">浏览</a>
-            <a href="{{ url_for('search') }}">搜索</a>
+            <a href="{{ url_for('index_page') }}">{{ t("nav.home") }}</a>
+            <a href="{{ url_for('browse') }}">{{ t("nav.browse") }}</a>
+            <a href="{{ url_for('search') }}">{{ t("nav.search") }}</a>
             {% if config.ENABLE_REVIEW %}
-            <a href="{{ url_for('review_page') }}">审核</a>
+            <a href="{{ url_for('review_page') }}">{{ t("nav.review") }}</a>
             {% endif %}
-            <a href="{{ url_for('new_file') }}">+ 新建</a>
-            <a href="{{ url_for('logout') }}" class="nav-logout">退出</a>
+            <a href="{{ url_for('new_file') }}">{{ t("nav.new") }}</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">{{ t("nav.logout") }}</a>
         </div>
         <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('show')">&#9776;</button>
     </nav>

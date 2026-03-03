@@ -1,23 +1,23 @@
 {% extends "base.html" %}
-{% block title %}{{ '新建' if is_new else '编辑 ' + file_id }}{% endblock %}
+{% block title %}{{ t('edit.new_title') if is_new else t('edit.edit_title', title=metadata.get('title', file_id)) }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>{{ '新建知识记录' if is_new else '编辑: ' + metadata.get('title', file_id) }}</h1>
+    <h1>{{ t('edit.new_title') if is_new else t('edit.edit_title', title=metadata.get('title', file_id)) }}</h1>
 </div>
 
 <form method="POST" class="edit-form">
     <div class="form-grid">
         <div class="form-group">
-            <label for="title">标题 *</label>
+            <label for="title">{{ t("edit.label_title") }}</label>
             <input type="text" id="title" name="title" value="{{ metadata.get('title', '') }}" required>
         </div>
 
         {% if categories %}
         <div class="form-group">
-            <label for="source">来源库</label>
+            <label for="source">{{ t("edit.label_source") }}</label>
             <select id="source" name="source" onchange="updateCategories()">
-                <option value="">-- 选择来源 --</option>
+                <option value="">{{ t("edit.select_source") }}</option>
                 {% for src_name in categories %}
                 <option value="{{ src_name }}" {{ 'selected' if metadata.get('source') == src_name }}>{{ src_name }}</option>
                 {% endfor %}
@@ -25,9 +25,9 @@
         </div>
 
         <div class="form-group">
-            <label for="category">分类</label>
+            <label for="category">{{ t("edit.label_category") }}</label>
             <select id="category" name="category" onchange="updateSubcategories()">
-                <option value="">-- 选择分类 --</option>
+                <option value="">{{ t("edit.select_category") }}</option>
                 {% if metadata.get('category') %}
                 <option value="{{ metadata.category }}" selected>{{ metadata.category }}</option>
                 {% endif %}
@@ -35,9 +35,9 @@
         </div>
 
         <div class="form-group">
-            <label for="subcategory">子分类</label>
+            <label for="subcategory">{{ t("edit.label_subcategory") }}</label>
             <select id="subcategory" name="subcategory">
-                <option value="">-- 选择子分类 --</option>
+                <option value="">{{ t("edit.select_subcategory") }}</option>
                 {% if metadata.get('subcategory') %}
                 <option value="{{ metadata.subcategory }}" selected>{{ metadata.subcategory }}</option>
                 {% endif %}
@@ -46,17 +46,17 @@
         {% endif %}
 
         <div class="form-group">
-            <label for="tags">标签（逗号分隔）</label>
+            <label for="tags">{{ t("edit.label_tags") }}</label>
             <input type="text" id="tags" name="tags" value="{{ metadata.get('tags', [])|join(', ') }}">
         </div>
 
         {% if is_new and folders %}
         <div class="form-group">
-            <label for="folder">保存到文件夹</label>
+            <label for="folder">{{ t("edit.label_folder") }}</label>
             <select id="folder" name="folder">
-                <option value="">根目录（不归类）</option>
+                <option value="">{{ t("view.root_directory") }}</option>
                 {% for f in folders %}
-                <option value="{{ f }}" {{ 'selected' if f == '草稿箱' }}>{{ f }}</option>
+                <option value="{{ f }}" {{ 'selected' if f == config.DRAFTS_FOLDER }}>{{ f }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -64,9 +64,9 @@
 
         {% if config.ENABLE_REVIEW %}
         <div class="form-group">
-            <label for="review_status">审核状态</label>
+            <label for="review_status">{{ t("edit.label_review_status") }}</label>
             <select id="review_status" name="review_status">
-                <option value="">未设置</option>
+                <option value="">{{ t("edit.not_set") }}</option>
                 {% for rs in review_statuses %}
                 <option value="{{ rs }}" {{ 'selected' if metadata.get('review_status') == rs }}>{{ rs }}</option>
                 {% endfor %}
@@ -76,16 +76,16 @@
     </div>
 
     <div class="form-group">
-        <label for="content">内容（Markdown）</label>
+        <label for="content">{{ t("edit.label_content") }}</label>
         <textarea id="content" name="content" rows="20">{{ content }}</textarea>
     </div>
 
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">保存</button>
+        <button type="submit" class="btn btn-primary">{{ t("edit.save") }}</button>
         {% if not is_new %}
-        <a href="{{ url_for('view', file_id=file_id) }}" class="btn">取消</a>
+        <a href="{{ url_for('view', file_id=file_id) }}" class="btn">{{ t("edit.cancel") }}</a>
         {% else %}
-        <a href="{{ url_for('index_page') }}" class="btn">取消</a>
+        <a href="{{ url_for('index_page') }}" class="btn">{{ t("edit.cancel") }}</a>
         {% endif %}
     </div>
 </form>
