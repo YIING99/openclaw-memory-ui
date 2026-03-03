@@ -50,6 +50,18 @@
             <input type="text" id="tags" name="tags" value="{{ metadata.get('tags', [])|join(', ') }}">
         </div>
 
+        {% if is_new and folders %}
+        <div class="form-group">
+            <label for="folder">保存到文件夹</label>
+            <select id="folder" name="folder">
+                <option value="">根目录（不归类）</option>
+                {% for f in folders %}
+                <option value="{{ f }}" {{ 'selected' if f == '草稿箱' }}>{{ f }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
         {% if config.ENABLE_REVIEW %}
         <div class="form-group">
             <label for="review_status">审核状态</label>

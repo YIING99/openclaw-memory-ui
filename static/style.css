@@ -440,6 +440,125 @@ body {
     font-size: 0.95rem;
 }
 
+/* === Section Header === */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.section-header h2 { margin-bottom: 0; }
+
+/* === Folder Card Count === */
+.dir-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* === File Item Row (with checkbox) === */
+.file-item-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+
+.file-checkbox {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: var(--radius) 0 0 var(--radius);
+    cursor: pointer;
+}
+
+.file-checkbox input { cursor: pointer; width: 16px; height: 16px; accent-color: var(--primary); }
+
+.file-item-flex {
+    flex: 1;
+    border-radius: 0 var(--radius) var(--radius) 0 !important;
+}
+
+.file-item-row .file-item-flex {
+    border-radius: 0 var(--radius) var(--radius) 0 !important;
+}
+
+/* If no checkbox (root files on home), keep normal radius */
+.file-item-row:not(:has(.file-checkbox)) .file-item-flex {
+    border-radius: var(--radius) !important;
+}
+
+/* === Batch Action Bar === */
+.batch-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.batch-bar form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.batch-select {
+    padding: 4px 8px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 0.8rem;
+}
+
+/* === Modal === */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    min-width: 320px;
+    max-width: 90vw;
+}
+
+.modal-box h3 {
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+}
+
+.modal-box .form-group { margin-bottom: 12px; }
+
+.modal-box input,
+.modal-box select {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 0.9rem;
+}
+
+.modal-box input:focus,
+.modal-box select:focus { outline: none; border-color: var(--primary); }
+
+/* === Muted Text === */
+.text-muted { color: var(--text-muted); font-size: 0.9rem; }
+
 /* === Footer === */
 .footer {
     text-align: center;
