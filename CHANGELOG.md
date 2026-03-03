@@ -1,5 +1,48 @@
 # Changelog
 
+## v1.2.0 — 2026-03-03
+
+### i18n & Generalization
+
+Transform from OpenClaw-specific tool to a generic markdown knowledge base UI.
+
+**New Features:**
+
+- **i18n Support** — Full English and Chinese localization via JSON locale files (`locales/en.json`, `locales/zh.json`). Set `LANGUAGE=en` or `LANGUAGE=zh` in `.env`. Add your own language by creating a new locale file.
+- **Setup Wizard** — Interactive `python setup.py` to configure language, password, memory directory, template pack, and branding in 30 seconds.
+- **Template Packs** — Three pre-built `categories.json` templates in `presets/`:
+  - `ai-agent` — AI agent knowledge base (Conversations/Knowledge/Learnings)
+  - `dev-notes` — Developer notes (Projects/TIL/References)
+  - `personal` — Personal knowledge base (Notes/Resources)
+- **Configurable Review Statuses** — `REVIEW_STATUSES` and `APPROVED_STATUSES` env vars let you define your own review workflow labels (they're stored in frontmatter, so they're language-independent).
+- **Configurable Drafts Folder** — `DRAFTS_FOLDER` env var (default: `drafts`).
+
+**Breaking Changes (Migration Required):**
+
+- Default `MEMORY_DIR` changed from `~/.openclaw/workspace/memory` to `~/memory`
+- Default `REINDEX_COMMAND` changed from `npx openclaw memory index --force` to empty (disabled)
+- Default `OPENCLAW_DIR` changed from `~/.openclaw` to empty
+- Default `APP_SUBTITLE` changed from `OpenClaw Knowledge Base` to `Markdown Knowledge Base`
+- Default `REVIEW_STATUSES` changed from Chinese to English (`pending,in_review,approved,needs_revision,published`)
+
+**Migration for existing Chinese deployments:** Add to `.env`:
+```
+LANGUAGE=zh
+REVIEW_STATUSES=待审核,审核中,已通过,需修改,已发布
+APPROVED_STATUSES=已通过,已发布
+DRAFTS_FOLDER=草稿箱
+```
+
+**Other Changes:**
+
+- `categories.json` removed from git tracking (now instance-specific, won't be overwritten by `git pull`)
+- All Python flash messages use i18n
+- All HTML templates use `{{ t("key") }}` for UI strings
+- README rewritten from generic perspective
+- `.env.example` updated with all new variables
+
+---
+
 ## v1.1.0 — 2026-03-03
 
 ### Folder Management
@@ -31,8 +74,8 @@ Organize your knowledge base with physical folders for better structure and disc
 
 **Architecture Notes:**
 
-- Folders are physical subdirectories under `memory/`. OpenClaw's `memory index` recursively indexes all subdirectories, so search and semantic retrieval work across all folders with no additional configuration.
-- The `_index.json` stores relative paths (e.g. `素材库/MAT-001.md`), updated automatically on move/rename operations.
+- Folders are physical subdirectories under `memory/`. Index tools can recursively index all subdirectories, so search works across all folders with no additional configuration.
+- The `_index.json` stores relative paths (e.g. `folder/DOC-001.md`), updated automatically on move/rename operations.
 - `all_folders` is injected into all templates via Flask `context_processor` for consistent folder access.
 
 ---

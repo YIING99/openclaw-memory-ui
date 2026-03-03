@@ -1,4 +1,4 @@
-"""OpenClaw Memory Web UI — Gunicorn configuration"""
+"""Memory Web UI — Gunicorn configuration"""
 import os
 
 bind = os.environ.get("BIND", "127.0.0.1:5000")
