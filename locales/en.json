@@ -1,0 +1,123 @@
+{
+  "nav": {
+    "home": "Home",
+    "browse": "Browse",
+    "search": "Search",
+    "review": "Review",
+    "new": "+ New",
+    "logout": "Logout"
+  },
+  "home": {
+    "title": "Knowledge Base",
+    "total_count": "{count} items",
+    "rebuild_index": "Rebuild Index",
+    "rebuild_confirm": "Rebuild index?",
+    "pending_label": "Pending: ",
+    "pending_review": "{count} pending review",
+    "needs_revision": "{count} need revision",
+    "folders_title": "Folders",
+    "new_folder": "+ New Folder",
+    "items_count": "{count} items",
+    "no_folders": "No folders yet",
+    "uncategorized": "Uncategorized Files",
+    "recent": "Recently Updated"
+  },
+  "folders": {
+    "create_title": "New Folder",
+    "folder_name": "Folder name",
+    "create": "Create",
+    "cancel": "Cancel",
+    "rename_title": "Rename Folder",
+    "confirm": "Confirm",
+    "delete_folder": "Delete Folder",
+    "delete_confirm": "Delete folder \"{name}\"?\nFiles will be moved to {drafts}",
+    "rename": "Rename"
+  },
+  "browse": {
+    "title": "Browse",
+    "all": "All",
+    "items_count": "{count} items",
+    "subdirs": "Subdirectories",
+    "files": "Files",
+    "empty": "This directory is empty",
+    "batch_selected": "{count} selected",
+    "move_to_root": "Move to root",
+    "move": "Move"
+  },
+  "view": {
+    "edit": "Edit",
+    "move_to": "Move to...",
+    "delete": "Delete",
+    "delete_confirm": "Are you sure? This cannot be undone.",
+    "move_title": "Move to Folder",
+    "root_directory": "Root (uncategorized)",
+    "meta_id": "ID",
+    "meta_source": "Source",
+    "meta_category": "Category",
+    "meta_subcategory": "Subcategory",
+    "meta_review_status": "Review Status",
+    "meta_tags": "Tags",
+    "meta_created": "Created",
+    "meta_modified": "Modified",
+    "meta_version": "Version"
+  },
+  "edit": {
+    "new_title": "New Record",
+    "edit_title": "Edit: {title}",
+    "label_title": "Title *",
+    "label_source": "Source",
+    "select_source": "-- Select source --",
+    "label_category": "Category",
+    "select_category": "-- Select category --",
+    "label_subcategory": "Subcategory",
+    "select_subcategory": "-- Select subcategory --",
+    "label_tags": "Tags (comma separated)",
+    "label_folder": "Save to folder",
+    "label_review_status": "Review Status",
+    "not_set": "Not set",
+    "label_content": "Content (Markdown)",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "search": {
+    "title": "Search Knowledge Base",
+    "placeholder": "Enter keywords to search...",
+    "button": "Search",
+    "result_count": "Found {count} results",
+    "relevance": "Relevance: {score}",
+    "no_results": "No matching content found"
+  },
+  "review": {
+    "title": "Review Queue",
+    "items_count": "{count} items",
+    "approve": "Approve",
+    "reject": "Reject",
+    "edit": "Edit",
+    "empty": "No items pending review"
+  },
+  "login": {
+    "placeholder": "Enter password",
+    "button": "Log in"
+  },
+  "flash": {
+    "wrong_password": "Incorrect password",
+    "save_success": "Saved successfully, rebuilding index in background",
+    "index_rebuilt": "Index rebuilt, vector index updating in background",
+    "file_deleted": "Deleted {id}",
+    "review_updated": "Marked {id} as \"{status}\"",
+    "invalid_folder_name": "Invalid folder name",
+    "folder_exists": "Folder \"{name}\" already exists",
+    "folder_created": "Created folder \"{name}\"",
+    "folder_not_found": "Folder \"{name}\" does not exist",
+    "folder_renamed": "Renamed \"{old}\" to \"{new}\"",
+    "folder_delete_failed": "Cannot delete folder \"{name}\" (may contain non-.md files)",
+    "folder_deleted_with_files": "Deleted \"{name}\", {count} files moved to {drafts}",
+    "folder_deleted_empty": "Deleted empty folder \"{name}\"",
+    "file_moved": "Moved \"{id}\" to \"{folder}\"",
+    "batch_moved": "Moved {count} files to \"{folder}\"",
+    "no_files_selected": "No files selected"
+  },
+  "common": {
+    "not_set_label": "Not set"
+  }
+}

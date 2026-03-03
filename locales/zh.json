@@ -1,0 +1,123 @@
+{
+  "nav": {
+    "home": "首页",
+    "browse": "浏览",
+    "search": "搜索",
+    "review": "审核",
+    "new": "+ 新建",
+    "logout": "退出"
+  },
+  "home": {
+    "title": "知识记忆库",
+    "total_count": "共 {count} 条",
+    "rebuild_index": "重建索引",
+    "rebuild_confirm": "重建索引？",
+    "pending_label": "待处理：",
+    "pending_review": "{count} 条待审核",
+    "needs_revision": "{count} 条需修改",
+    "folders_title": "文件夹",
+    "new_folder": "+ 新建文件夹",
+    "items_count": "{count} 条",
+    "no_folders": "暂无文件夹",
+    "uncategorized": "未归类文件",
+    "recent": "最近更新"
+  },
+  "folders": {
+    "create_title": "新建文件夹",
+    "folder_name": "文件夹名称",
+    "create": "创建",
+    "cancel": "取消",
+    "rename_title": "重命名文件夹",
+    "confirm": "确认",
+    "delete_folder": "删除文件夹",
+    "delete_confirm": "删除文件夹「{name}」？\n文件将移至{drafts}",
+    "rename": "重命名"
+  },
+  "browse": {
+    "title": "浏览",
+    "all": "全部",
+    "items_count": "{count} 条",
+    "subdirs": "子目录",
+    "files": "文件",
+    "empty": "此目录为空",
+    "batch_selected": "已选 {count} 项",
+    "move_to_root": "移到根目录",
+    "move": "移动"
+  },
+  "view": {
+    "edit": "编辑",
+    "move_to": "移动到...",
+    "delete": "删除",
+    "delete_confirm": "确定删除？此操作不可撤销。",
+    "move_title": "移动到文件夹",
+    "root_directory": "根目录（不归类）",
+    "meta_id": "编号",
+    "meta_source": "来源",
+    "meta_category": "分类",
+    "meta_subcategory": "子分类",
+    "meta_review_status": "审核状态",
+    "meta_tags": "标签",
+    "meta_created": "创建",
+    "meta_modified": "修改",
+    "meta_version": "版本"
+  },
+  "edit": {
+    "new_title": "新建知识记录",
+    "edit_title": "编辑: {title}",
+    "label_title": "标题 *",
+    "label_source": "来源库",
+    "select_source": "-- 选择来源 --",
+    "label_category": "分类",
+    "select_category": "-- 选择分类 --",
+    "label_subcategory": "子分类",
+    "select_subcategory": "-- 选择子分类 --",
+    "label_tags": "标签（逗号分隔）",
+    "label_folder": "保存到文件夹",
+    "label_review_status": "审核状态",
+    "not_set": "未设置",
+    "label_content": "内容（Markdown）",
+    "save": "保存",
+    "cancel": "取消"
+  },
+  "search": {
+    "title": "搜索知识库",
+    "placeholder": "输入关键词搜索...",
+    "button": "搜索",
+    "result_count": "找到 {count} 条结果",
+    "relevance": "匹配度: {score}",
+    "no_results": "没有找到匹配的内容"
+  },
+  "review": {
+    "title": "待审核队列",
+    "items_count": "{count} 条",
+    "approve": "通过",
+    "reject": "驳回",
+    "edit": "编辑",
+    "empty": "没有待审核的内容"
+  },
+  "login": {
+    "placeholder": "输入密码",
+    "button": "登录"
+  },
+  "flash": {
+    "wrong_password": "密码错误",
+    "save_success": "保存成功，正在后台重建索引",
+    "index_rebuilt": "索引已重建，向量索引正在后台更新",
+    "file_deleted": "已删除 {id}",
+    "review_updated": "已将 {id} 标记为「{status}」",
+    "invalid_folder_name": "文件夹名不合法",
+    "folder_exists": "文件夹「{name}」已存在",
+    "folder_created": "已创建文件夹「{name}」",
+    "folder_not_found": "文件夹「{name}」不存在",
+    "folder_renamed": "已将「{old}」重命名为「{new}」",
+    "folder_delete_failed": "文件夹「{name}」无法删除（可能包含非 .md 文件）",
+    "folder_deleted_with_files": "已删除「{name}」，{count} 个文件已移至{drafts}",
+    "folder_deleted_empty": "已删除空文件夹「{name}」",
+    "file_moved": "已将「{id}」移至「{folder}」",
+    "batch_moved": "已移动 {count} 个文件到「{folder}」",
+    "no_files_selected": "未选择文件"
+  },
+  "common": {
+    "not_set_label": "未设置"
+  }
+}
