@@ -310,7 +310,7 @@ def login():
                 # Prepend SCRIPT_NAME for sub-path deployment (e.g. /memory)
                 return redirect(request.script_root + next_url)
             return redirect(url_for("index_page"))
-        flash("密码错误", "error")
+        flash(t("flash.wrong_password"), "error")
     return render_template("login.html")
 
 
@@ -354,13 +354,14 @@ def index_page():
     review_stats = {}
     for status in config.REVIEW_STATUSES:
         review_stats[status] = 0
-    review_stats["未设置"] = 0
+    not_set_label = t("common.not_set_label")
+    review_stats[not_set_label] = 0
     for fid, entry in entries.items():
         rs = entry.get("review_status", "")
         if rs in review_stats:
             review_stats[rs] += 1
         else:
-            review_stats["未设置"] += 1
+            review_stats[not_set_label] += 1
 
     return render_template(
         "browse.html",
@@ -530,7 +531,7 @@ def _save_file(file_id):
 
     trigger_reindex()
 
-    flash("保存成功，正在后台重建索引", "success")
+    flash(t("flash.save_success"), "success")
     return redirect(url_for("view", file_id=file_id))
 
 
@@ -630,7 +631,7 @@ def _update_review_status(file_id, new_status):
     if new_status in config.APPROVED_STATUSES:
         trigger_reindex()
 
-    flash(f"已将 {file_id} 标记为「{new_status}」", "success")
+    flash(t("flash.review_updated", id=file_id, status=new_status), "success")
     return redirect(url_for("review_page"))
 
 
@@ -640,7 +641,7 @@ def rebuild_index():
     """Manually rebuild index"""
     rebuild_index_from_files()
     trigger_reindex()
-    flash("索引已重建，向量索引正在后台更新", "success")
+    flash(t("flash.index_rebuilt"), "success")
     return redirect(url_for("index_page"))
 
 
@@ -660,7 +661,7 @@ def delete_file(file_id):
         save_index(index)
 
     trigger_reindex()
-    flash(f"已删除 {file_id}", "success")
+    flash(t("flash.file_deleted", id=file_id), "success")
     return redirect(url_for("index_page"))
 
 
@@ -674,15 +675,15 @@ def create_folder():
     """Create a new folder"""
     name = request.form.get("name", "").strip()
     if not name or "/" in name or ".." in name or name.startswith("."):
-        flash("文件夹名不合法", "error")
+        flash(t("flash.invalid_folder_name"), "error")
         return redirect(url_for("index_page"))
 
     folder_path = os.path.join(config.MEMORY_DIR, name)
     if os.path.exists(folder_path):
-        flash(f"文件夹「{name}」已存在", "error")
+        flash(t("flash.folder_exists", name=name), "error")
     else:
         os.makedirs(folder_path)
-        flash(f"已创建文件夹「{name}」", "success")
+        flash(t("flash.folder_created", name=name), "success")
     return redirect(url_for("index_page"))
 
 
@@ -694,16 +695,16 @@ def rename_folder():
     new_name = request.form.get("new_name", "").strip()
 
     if not old_name or not new_name or "/" in new_name or ".." in new_name or new_name.startswith("."):
-        flash("文件夹名不合法", "error")
+        flash(t("flash.invalid_folder_name"), "error")
         return redirect(url_for("index_page"))
 
     old_path = os.path.join(config.MEMORY_DIR, old_name)
     new_path = os.path.join(config.MEMORY_DIR, new_name)
 
     if not os.path.isdir(old_path):
-        flash(f"文件夹「{old_name}」不存在", "error")
+        flash(t("flash.folder_not_found", name=old_name), "error")
     elif os.path.exists(new_path):
-        flash(f"文件夹「{new_name}」已存在", "error")
+        flash(t("flash.folder_exists", name=new_name), "error")
     else:
         os.rename(old_path, new_path)
         index = load_index()
@@ -713,24 +714,24 @@ def rename_folder():
                 entry["path"] = new_name + path[len(old_name):]
         save_index(index)
         trigger_reindex()
-        flash(f"已将「{old_name}」重命名为「{new_name}」", "success")
+        flash(t("flash.folder_renamed", old=old_name, new=new_name), "success")
     return redirect(url_for("index_page"))
 
 
 @app.route("/folder/delete", methods=["POST"])
 @login_required
 def delete_folder():
-    """Delete a folder, moving files to 草稿箱"""
+    """Delete a folder, moving files to drafts folder"""
     name = request.form.get("name", "").strip()
     folder_path = os.path.join(config.MEMORY_DIR, name)
 
     if not os.path.isdir(folder_path):
-        flash(f"文件夹「{name}」不存在", "error")
+        flash(t("flash.folder_not_found", name=name), "error")
         return redirect(url_for("index_page"))
 
     files = [f for f in os.listdir(folder_path) if f.endswith(".md")]
     if files:
-        draft_dir = os.path.join(config.MEMORY_DIR, "草稿箱")
+        draft_dir = os.path.join(config.MEMORY_DIR, config.DRAFTS_FOLDER)
         os.makedirs(draft_dir, exist_ok=True)
         index = load_index()
         for fname in files:
@@ -740,20 +741,20 @@ def delete_folder():
             )
             for fid, entry in index.get("entries", {}).items():
                 if entry.get("path") == os.path.join(name, fname):
-                    entry["path"] = os.path.join("草稿箱", fname)
+                    entry["path"] = os.path.join(config.DRAFTS_FOLDER, fname)
         save_index(index)
 
     try:
         os.rmdir(folder_path)
     except OSError:
-        flash(f"文件夹「{name}」无法删除（可能包含非 .md 文件）", "error")
+        flash(t("flash.folder_delete_failed", name=name), "error")
         return redirect(url_for("index_page"))
 
     trigger_reindex()
     if files:
-        flash(f"已删除「{name}」，{len(files)} 个文件已移至草稿箱", "success")
+        flash(t("flash.folder_deleted_with_files", name=name, count=len(files), drafts=config.DRAFTS_FOLDER), "success")
     else:
-        flash(f"已删除空文件夹「{name}」", "success")
+        flash(t("flash.folder_deleted_empty", name=name), "success")
     return redirect(url_for("index_page"))
 
 
@@ -790,7 +791,7 @@ def move_file(file_id):
         save_index(index)
         trigger_reindex()
 
-    flash(f"已将「{file_id}」移至「{target_folder or '根目录'}」", "success")
+    flash(t("flash.file_moved", id=file_id, folder=target_folder or t("view.root_directory")), "success")
     return redirect(url_for("view", file_id=file_id))
 
 
@@ -802,7 +803,7 @@ def batch_move():
     target_folder = request.form.get("folder", "").strip()
 
     if not file_ids:
-        flash("未选择文件", "error")
+        flash(t("flash.no_files_selected"), "error")
         return redirect(request.referrer or url_for("index_page"))
 
     index = load_index()
@@ -832,7 +833,7 @@ def batch_move():
 
     save_index(index)
     trigger_reindex()
-    flash(f"已移动 {moved} 个文件到「{target_folder or '根目录'}」", "success")
+    flash(t("flash.batch_moved", count=moved, folder=target_folder or t("view.root_directory")), "success")
     return redirect(request.referrer or url_for("index_page"))
 
 
