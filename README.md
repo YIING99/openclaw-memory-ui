@@ -18,6 +18,8 @@ A lightweight web interface for managing [OpenClaw](https://github.com/nicepkg/o
 
 ## Features
 
+- **Folder Management** — Create, rename, delete folders to organize your knowledge base
+- **Move & Batch Move** — Move files between folders, single or batch select
 - **Browse & Search** — Navigate memory files by directory or full-text keyword search
 - **Markdown Rendering** — View files with syntax highlighting and table of contents
 - **YAML Frontmatter** — Edit metadata (title, tags, category, review status) via form UI
@@ -137,7 +139,8 @@ systemctl --user enable --now memory-ui
 ```
 
 - **memory/*.md** — Markdown files with YAML frontmatter (your knowledge base)
-- **_index.json** — Auto-generated file index for fast browsing
+- **memory/\<folder\>/*.md** — Files organized in subdirectories (folders). OpenClaw indexes recursively.
+- **_index.json** — Auto-generated file index for fast browsing (stores relative paths)
 - **openclaw memory index** — Triggered after edits to update semantic search vectors
 
 ## License
@@ -156,7 +159,9 @@ OpenClaw Memory Web UI 是一个轻量级的 Web 界面，用于管理 [OpenClaw
 
 ### 功能特性
 
-- 浏览和搜索 memory/ 目录中的 .md 文件
+- **文件夹管理** — 创建、重命名、删除文件夹，轻松组织知识库
+- **文件移动** — 单个或批量选择文件，在文件夹间自由移动
+- 浏览和搜索 memory/ 目录中的 .md 文件（支持子目录递归）
 - Markdown 渲染预览（支持代码高亮、目录）
 - 通过表单编辑 YAML frontmatter 元数据
 - 可选的审核工作流（通过/驳回）
