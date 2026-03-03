@@ -30,3 +30,4 @@ Thumbs.db
 # App data
 _index.json
 *.log
+categories.json
