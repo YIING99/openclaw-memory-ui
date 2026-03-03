@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-OpenClaw Memory Web UI
-Web interface for managing OpenClaw memory/ markdown files
+Memory Web UI
+Web interface for managing markdown knowledge base files
 """
 
 import json
@@ -46,10 +46,23 @@ class ReverseProxied:
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 
-# Inject config and folders into template context
+def t(key, **kwargs):
+    """Simple i18n: t("nav.home"), t("flash.file_deleted", id="DOC-001")"""
+    section, _, subkey = key.partition(".")
+    if subkey:
+        value = config.LOCALE.get(section, {}).get(subkey, key)
+    else:
+        value = config.LOCALE.get(key, key)
+    if isinstance(value, str) and kwargs:
+        for k, v in kwargs.items():
+            value = value.replace(f"{{{k}}}", str(v))
+    return value
+
+
+# Inject config, folders, translation, and language into template context
 @app.context_processor
 def inject_globals():
-    return dict(config=config, all_folders=get_folders())
+    return dict(config=config, all_folders=get_folders(), t=t, lang=config.LANGUAGE)
 
 
 # ============================================================

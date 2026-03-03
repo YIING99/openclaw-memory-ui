@@ -1,18 +1,26 @@
-"""OpenClaw Memory Web UI — Configuration"""
+"""Memory Web UI — Configuration"""
 import os
 import json
 import hashlib
 
+# === Language & i18n ===
+LANGUAGE = os.environ.get("LANGUAGE", "en")
+
+_LOCALE_DIR = os.path.join(os.path.dirname(__file__), "locales")
+_LOCALE_FILE = os.path.join(_LOCALE_DIR, f"{LANGUAGE}.json")
+if os.path.exists(_LOCALE_FILE):
+    with open(_LOCALE_FILE, encoding="utf-8") as _f:
+        LOCALE = json.load(_f)
+else:
+    with open(os.path.join(_LOCALE_DIR, "en.json"), encoding="utf-8") as _f:
+        LOCALE = json.load(_f)
+
 # === Path Configuration ===
-# Default: OpenClaw standard memory directory
 MEMORY_DIR = os.environ.get(
     "MEMORY_DIR",
-    os.path.expanduser("~/.openclaw/workspace/memory")
+    os.path.expanduser("~/memory")
 )
-OPENCLAW_DIR = os.environ.get(
-    "OPENCLAW_DIR",
-    os.path.expanduser("~/.openclaw")
-)
+OPENCLAW_DIR = os.environ.get("OPENCLAW_DIR", "")
 OPENCLAW_HOME = os.environ.get(
     "OPENCLAW_HOME",
     os.path.expanduser("~")
@@ -36,12 +44,21 @@ INDEX_FILE = os.path.join(MEMORY_DIR, "_index.json")
 
 # === Review System ===
 ENABLE_REVIEW = os.environ.get("ENABLE_REVIEW", "true").lower() == "true"
-REVIEW_STATUSES = ["待审核", "审核中", "已通过", "需修改", "已发布"]
-APPROVED_STATUSES = {"已通过", "已发布"}
+
+# Review statuses: configurable via env, comma-separated.
+# These values are stored in .md frontmatter, so they are NOT locale-dependent.
+_default_statuses = "pending,in_review,approved,needs_revision,published"
+REVIEW_STATUSES = [s.strip() for s in os.environ.get("REVIEW_STATUSES", _default_statuses).split(",")]
+
+_default_approved = "approved,published"
+APPROVED_STATUSES = set(s.strip() for s in os.environ.get("APPROVED_STATUSES", _default_approved).split(","))
+
+# === Drafts Folder ===
+DRAFTS_FOLDER = os.environ.get("DRAFTS_FOLDER", "drafts")
 
 # === Branding ===
 APP_TITLE = os.environ.get("APP_TITLE", "Memory UI")
-APP_SUBTITLE = os.environ.get("APP_SUBTITLE", "OpenClaw Knowledge Base")
+APP_SUBTITLE = os.environ.get("APP_SUBTITLE", "Markdown Knowledge Base")
 
 # === Categories ===
 # Load from categories.json if available, otherwise empty
@@ -54,8 +71,8 @@ else:
 
 # === Re-index Configuration ===
 # Custom command to run after edits (e.g. rebuild search index).
-# Default: OpenClaw memory index. Set to empty string to disable.
+# Set to empty string to disable (default).
 # Example: "npx openclaw memory index --force"
 # Example: "python3 /path/to/rebuild.py"
-REINDEX_COMMAND = os.environ.get("REINDEX_COMMAND", "npx openclaw memory index --force")
+REINDEX_COMMAND = os.environ.get("REINDEX_COMMAND", "")
 REINDEX_TIMEOUT = int(os.environ.get("REINDEX_TIMEOUT", "120"))
