@@ -46,10 +46,10 @@ class ReverseProxied:
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 
-# Inject config into template context
+# Inject config and folders into template context
 @app.context_processor
-def inject_config():
-    return dict(config=config)
+def inject_globals():
+    return dict(config=config, all_folders=get_folders())
 
 
 # ============================================================
@@ -192,6 +192,16 @@ def trigger_reindex():
     thread.start()
 
 
+def get_folders():
+    """Get list of subdirectories in memory dir"""
+    folders = []
+    for item in sorted(os.listdir(config.MEMORY_DIR)):
+        path = os.path.join(config.MEMORY_DIR, item)
+        if os.path.isdir(path) and not item.startswith('.') and not item.startswith('_'):
+            folders.append(item)
+    return folders
+
+
 def generate_next_id(prefix):
     """Generate next available ID, e.g. DOC-042"""
     index = load_index()
@@ -304,9 +314,23 @@ def logout():
 @app.route("/")
 @login_required
 def index_page():
-    """Home: recent files + category overview"""
+    """Home: folder cards + recent files"""
     index = load_index()
     entries = index.get("entries", {})
+
+    folders = get_folders()
+    folder_stats = {f: 0 for f in folders}
+    root_files = []
+
+    for fid, entry in entries.items():
+        path = entry.get("path", "")
+        parts = path.split("/")
+        if len(parts) > 1 and parts[0] in folder_stats:
+            folder_stats[parts[0]] += 1
+        else:
+            root_files.append((fid, entry))
+
+    root_files.sort(key=lambda x: x[1].get("modified", ""), reverse=True)
 
     recent = sorted(
         entries.items(),
@@ -314,18 +338,11 @@ def index_page():
         reverse=True,
     )[:20]
 
-    category_stats = {}
     review_stats = {}
     for status in config.REVIEW_STATUSES:
         review_stats[status] = 0
     review_stats["未设置"] = 0
-
     for fid, entry in entries.items():
-        source = entry.get("source", "") or "未分类"
-        cat = entry.get("category", "") or "未分类"
-        key = f"{source}/{cat}" if source else cat
-        category_stats[key] = category_stats.get(key, 0) + 1
-
         rs = entry.get("review_status", "")
         if rs in review_stats:
             review_stats[rs] += 1
@@ -335,7 +352,9 @@ def index_page():
     return render_template(
         "browse.html",
         recent=recent,
-        category_stats=category_stats,
+        folders=folders,
+        folder_stats=folder_stats,
+        root_files=root_files,
         review_stats=review_stats,
         total=len(entries),
     )
@@ -427,6 +446,7 @@ def edit(file_id):
         content=content,
         categories=config.CATEGORIES,
         review_statuses=config.REVIEW_STATUSES,
+        folders=get_folders(),
         is_new=False,
     )
 
@@ -450,7 +470,11 @@ def _save_file(file_id):
     if entry:
         filepath = os.path.join(config.MEMORY_DIR, entry["path"])
     else:
-        filepath = os.path.join(config.MEMORY_DIR, f"{file_id}.md")
+        folder = request.form.get("folder", "").strip()
+        if folder:
+            filepath = os.path.join(config.MEMORY_DIR, folder, f"{file_id}.md")
+        else:
+            filepath = os.path.join(config.MEMORY_DIR, f"{file_id}.md")
 
     old_post = None
     if os.path.exists(filepath):
@@ -518,6 +542,7 @@ def new_file():
         content="",
         categories=config.CATEGORIES,
         review_statuses=config.REVIEW_STATUSES,
+        folders=get_folders(),
         is_new=True,
     )
 
@@ -624,6 +649,178 @@ def delete_file(file_id):
     trigger_reindex()
     flash(f"已删除 {file_id}", "success")
     return redirect(url_for("index_page"))
+
+
+# ============================================================
+# Folder Management
+# ============================================================
+
+@app.route("/folder/create", methods=["POST"])
+@login_required
+def create_folder():
+    """Create a new folder"""
+    name = request.form.get("name", "").strip()
+    if not name or "/" in name or ".." in name or name.startswith("."):
+        flash("文件夹名不合法", "error")
+        return redirect(url_for("index_page"))
+
+    folder_path = os.path.join(config.MEMORY_DIR, name)
+    if os.path.exists(folder_path):
+        flash(f"文件夹「{name}」已存在", "error")
+    else:
+        os.makedirs(folder_path)
+        flash(f"已创建文件夹「{name}」", "success")
+    return redirect(url_for("index_page"))
+
+
+@app.route("/folder/rename", methods=["POST"])
+@login_required
+def rename_folder():
+    """Rename a folder"""
+    old_name = request.form.get("old_name", "").strip()
+    new_name = request.form.get("new_name", "").strip()
+
+    if not old_name or not new_name or "/" in new_name or ".." in new_name or new_name.startswith("."):
+        flash("文件夹名不合法", "error")
+        return redirect(url_for("index_page"))
+
+    old_path = os.path.join(config.MEMORY_DIR, old_name)
+    new_path = os.path.join(config.MEMORY_DIR, new_name)
+
+    if not os.path.isdir(old_path):
+        flash(f"文件夹「{old_name}」不存在", "error")
+    elif os.path.exists(new_path):
+        flash(f"文件夹「{new_name}」已存在", "error")
+    else:
+        os.rename(old_path, new_path)
+        index = load_index()
+        for fid, entry in index.get("entries", {}).items():
+            path = entry.get("path", "")
+            if path.startswith(old_name + "/"):
+                entry["path"] = new_name + path[len(old_name):]
+        save_index(index)
+        trigger_reindex()
+        flash(f"已将「{old_name}」重命名为「{new_name}」", "success")
+    return redirect(url_for("index_page"))
+
+
+@app.route("/folder/delete", methods=["POST"])
+@login_required
+def delete_folder():
+    """Delete a folder, moving files to 草稿箱"""
+    name = request.form.get("name", "").strip()
+    folder_path = os.path.join(config.MEMORY_DIR, name)
+
+    if not os.path.isdir(folder_path):
+        flash(f"文件夹「{name}」不存在", "error")
+        return redirect(url_for("index_page"))
+
+    files = [f for f in os.listdir(folder_path) if f.endswith(".md")]
+    if files:
+        draft_dir = os.path.join(config.MEMORY_DIR, "草稿箱")
+        os.makedirs(draft_dir, exist_ok=True)
+        index = load_index()
+        for fname in files:
+            os.rename(
+                os.path.join(folder_path, fname),
+                os.path.join(draft_dir, fname),
+            )
+            for fid, entry in index.get("entries", {}).items():
+                if entry.get("path") == os.path.join(name, fname):
+                    entry["path"] = os.path.join("草稿箱", fname)
+        save_index(index)
+
+    try:
+        os.rmdir(folder_path)
+    except OSError:
+        flash(f"文件夹「{name}」无法删除（可能包含非 .md 文件）", "error")
+        return redirect(url_for("index_page"))
+
+    trigger_reindex()
+    if files:
+        flash(f"已删除「{name}」，{len(files)} 个文件已移至草稿箱", "success")
+    else:
+        flash(f"已删除空文件夹「{name}」", "success")
+    return redirect(url_for("index_page"))
+
+
+# ============================================================
+# File Move
+# ============================================================
+
+@app.route("/move/<file_id>", methods=["POST"])
+@login_required
+def move_file(file_id):
+    """Move a single file to a folder"""
+    target_folder = request.form.get("folder", "").strip()
+
+    index = load_index()
+    entry = index.get("entries", {}).get(file_id)
+    if not entry:
+        abort(404)
+
+    old_path = os.path.join(config.MEMORY_DIR, entry["path"])
+    fname = os.path.basename(old_path)
+
+    if target_folder:
+        new_dir = os.path.join(config.MEMORY_DIR, target_folder)
+        os.makedirs(new_dir, exist_ok=True)
+        new_path = os.path.join(new_dir, fname)
+        new_rel = os.path.join(target_folder, fname)
+    else:
+        new_path = os.path.join(config.MEMORY_DIR, fname)
+        new_rel = fname
+
+    if old_path != new_path:
+        os.rename(old_path, new_path)
+        entry["path"] = new_rel
+        save_index(index)
+        trigger_reindex()
+
+    flash(f"已将「{file_id}」移至「{target_folder or '根目录'}」", "success")
+    return redirect(url_for("view", file_id=file_id))
+
+
+@app.route("/batch-move", methods=["POST"])
+@login_required
+def batch_move():
+    """Move multiple files to a folder"""
+    file_ids = request.form.getlist("file_ids")
+    target_folder = request.form.get("folder", "").strip()
+
+    if not file_ids:
+        flash("未选择文件", "error")
+        return redirect(request.referrer or url_for("index_page"))
+
+    index = load_index()
+    moved = 0
+
+    for file_id in file_ids:
+        entry = index.get("entries", {}).get(file_id)
+        if not entry:
+            continue
+
+        old_path = os.path.join(config.MEMORY_DIR, entry["path"])
+        fname = os.path.basename(old_path)
+
+        if target_folder:
+            new_dir = os.path.join(config.MEMORY_DIR, target_folder)
+            os.makedirs(new_dir, exist_ok=True)
+            new_path = os.path.join(new_dir, fname)
+            new_rel = os.path.join(target_folder, fname)
+        else:
+            new_path = os.path.join(config.MEMORY_DIR, fname)
+            new_rel = fname
+
+        if old_path != new_path:
+            os.rename(old_path, new_path)
+            entry["path"] = new_rel
+            moved += 1
+
+    save_index(index)
+    trigger_reindex()
+    flash(f"已移动 {moved} 个文件到「{target_folder or '根目录'}」", "success")
+    return redirect(request.referrer or url_for("index_page"))
 
 
 # ============================================================

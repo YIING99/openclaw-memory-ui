@@ -25,18 +25,51 @@
 </div>
 {% endif %}
 
-<!-- Category stats -->
+<!-- Folder cards -->
 <section class="section">
-    <h2>分类概览</h2>
-    <div class="stat-grid">
-        {% for cat, count in category_stats|dictsort %}
-        <div class="stat-card">
-            <div class="stat-count">{{ count }}</div>
-            <div class="stat-label">{{ cat }}</div>
+    <div class="section-header">
+        <h2>文件夹</h2>
+        <button class="btn btn-sm" onclick="document.getElementById('new-folder-modal').style.display='flex'">+ 新建文件夹</button>
+    </div>
+    <div class="dir-grid">
+        {% for folder in folders %}
+        <a href="{{ url_for('browse', subpath=folder) }}" class="dir-card">
+            <span class="dir-icon">&#128193;</span>
+            <span class="dir-name">{{ folder }}</span>
+            <span class="dir-count">{{ folder_stats.get(folder, 0) }} 条</span>
+        </a>
+        {% endfor %}
+        {% if not folders %}
+        <p class="text-muted">暂无文件夹</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Root (uncategorized) files -->
+{% if root_files %}
+<section class="section">
+    <h2>未归类文件 <span class="badge">{{ root_files|length }} 条</span></h2>
+    <div class="file-list">
+        {% for file_id, entry in root_files %}
+        <div class="file-item-row">
+            <a href="{{ url_for('view', file_id=file_id) }}" class="file-item file-item-flex">
+                <div class="file-title">
+                    {{ entry.title or file_id }}
+                    {% if entry.review_status %}
+                    <span class="badge badge-{{ 'success' if entry.review_status in config.APPROVED_STATUSES else 'warning' }}">
+                        {{ entry.review_status }}
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="file-meta">
+                    <span>{{ entry.modified }}</span>
+                </div>
+            </a>
         </div>
         {% endfor %}
     </div>
 </section>
+{% endif %}
 
 <!-- Recent files -->
 <section class="section">
@@ -53,12 +86,29 @@
                 {% endif %}
             </div>
             <div class="file-meta">
-                <span>{{ entry.source }}</span>
-                {% if entry.category %}<span>{{ entry.category }}</span>{% endif %}
+                {% if '/' in entry.get('path', '') %}
+                <span class="tag">{{ entry.path.split('/')[0] }}</span>
+                {% endif %}
                 <span>{{ entry.modified }}</span>
             </div>
         </a>
         {% endfor %}
     </div>
 </section>
+
+<!-- New folder modal -->
+<div id="new-folder-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+    <div class="modal-box">
+        <h3>新建文件夹</h3>
+        <form method="POST" action="{{ url_for('create_folder') }}">
+            <div class="form-group">
+                <input type="text" name="name" placeholder="文件夹名称" required autofocus>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">创建</button>
+                <button type="button" class="btn" onclick="this.closest('.modal-overlay').style.display='none'">取消</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
