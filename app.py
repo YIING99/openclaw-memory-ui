@@ -67,7 +67,7 @@ def load_index():
 def save_index(index_data):
     """Save _index.json"""
     with open(config.INDEX_FILE, "w", encoding="utf-8") as f:
-        json.dump(index_data, f, ensure_ascii=False, indent=2)
+        json.dump(index_data, f, ensure_ascii=False, indent=2, default=str)
 
 
 def rebuild_index_from_files():
