@@ -29,13 +29,7 @@
       {"flag": "--nginx-path", "default": "", "description": "Nginx sub-path (e.g. /memory)"},
       {"flag": "--preset", "default": "", "description": "Template pack: ai-agent, dev-notes, or personal"}
     ],
-    "auto_detect": {
-      "openclaw_memory": {
-        "description": "Detect existing OpenClaw memory directory",
-        "command": "for d in ~/.openclaw/workspace/memory ~/y1home/.openclaw/workspace/memory; do [ -d \"$d\" ] && echo $d && break; done",
-        "maps_to": "--memory-dir"
-      }
-    }
+    "note": "Default --memory-dir is ~/memory (empty directory). Users should explicitly specify their own directory."
   },
   "verify": {
     "service_active": {

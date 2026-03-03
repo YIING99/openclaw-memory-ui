@@ -14,7 +14,7 @@ Password: SET_YOUR_PASSWORD
 Language: zh
 ```
 
-**With OpenClaw integration:**
+**With custom memory directory:**
 
 ```
 Install Memory Web UI on my VPS.
@@ -22,7 +22,7 @@ Docs: https://github.com/YIING99/openclaw-memory-ui/blob/main/AGENT_INSTALL.md
 Manifest: https://raw.githubusercontent.com/YIING99/openclaw-memory-ui/main/memory-ui.json
 Password: SET_YOUR_PASSWORD
 Language: zh
-Auto-detect OpenClaw memory directory and use it as --memory-dir.
+Memory directory: ~/my-knowledge-base
 If Nginx is available, configure /memory/ sub-path.
 ```
 
@@ -55,21 +55,19 @@ bash <(curl -sSL https://raw.githubusercontent.com/YIING99/openclaw-memory-ui/ma
   --password "SET_PASSWORD_HERE"
 ```
 
-### Full install with Chinese locale and OpenClaw integration:
+### Full install with Chinese locale:
 ```bash
 bash <(curl -sSL https://raw.githubusercontent.com/YIING99/openclaw-memory-ui/main/quick-install.sh) \
   --password "SET_PASSWORD_HERE" \
   --install-dir "$HOME/memory-ui" \
-  --memory-dir "$HOME/.openclaw/workspace/memory" \
+  --memory-dir "$HOME/memory" \
   --language zh \
-  --port 18800 \
+  --port 5000 \
   --app-title "Memory UI" \
   --app-subtitle "知识记忆库" \
   --review-statuses "待审核,审核中,已通过,需修改,已发布" \
   --approved-statuses "已通过,已发布" \
   --drafts-folder "草稿箱" \
-  --reindex-cmd "npx openclaw memory index --force" \
-  --openclaw-home "$HOME" \
   --nginx-path "/memory" \
   --preset "ai-agent"
 ```
@@ -168,17 +166,8 @@ rm -rf ~/memory-ui  # or your --install-dir
 | Login fails | Check password hash in `.env` | Re-run installer with correct `--password` |
 | No files shown | `ls MEMORY_DIR/*.md` | Check `--memory-dir` path is correct |
 
-## For OpenClaw Agents
+## Important: Memory Directory
 
-If the user's VPS already runs OpenClaw, detect the memory directory:
-```bash
-# Check common OpenClaw memory locations
-for dir in ~/.openclaw/workspace/memory ~/y1home/.openclaw/workspace/memory; do
-  if [ -d "$dir" ]; then
-    echo "FOUND: $dir"
-    ls "$dir"/*.md 2>/dev/null | head -5
-  fi
-done
-```
+The default `--memory-dir` is `~/memory` — a fresh empty directory. **Do NOT auto-detect or reuse existing directories** unless the user explicitly provides a path. Each installation should have its own independent memory directory.
 
-Use `--memory-dir` to point to the detected directory, and set `--reindex-cmd` to rebuild the OpenClaw search index after edits.
+If the user wants to use an existing markdown directory, they must explicitly specify it via `--memory-dir /path/to/their/directory`.

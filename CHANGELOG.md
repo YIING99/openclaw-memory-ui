@@ -19,7 +19,7 @@ Transform from OpenClaw-specific tool to a generic markdown knowledge base UI.
 
 **Breaking Changes (Migration Required):**
 
-- Default `MEMORY_DIR` changed from `~/.openclaw/workspace/memory` to `~/memory`
+- Default `MEMORY_DIR` changed to `~/memory`
 - Default `REINDEX_COMMAND` changed from `npx openclaw memory index --force` to empty (disabled)
 - Default `OPENCLAW_DIR` changed from `~/.openclaw` to empty
 - Default `APP_SUBTITLE` changed from `OpenClaw Knowledge Base` to `Markdown Knowledge Base`
