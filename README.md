@@ -1,6 +1,6 @@
-# OpenClaw Memory Web UI
+# Memory Web UI
 
-A lightweight web interface for managing [OpenClaw](https://github.com/nicepkg/openclaw) memory files. Browse, search, edit, and organize your `.md` knowledge base with a clean dark-themed UI.
+A lightweight web interface for managing markdown knowledge base files. Browse, search, edit, and organize your `.md` files with a clean dark-themed UI.
 
 **[中文说明](#中文说明)**
 
@@ -18,14 +18,17 @@ A lightweight web interface for managing [OpenClaw](https://github.com/nicepkg/o
 
 ## Features
 
+- **i18n Support** — English and Chinese out of the box; add your own language in `locales/`
+- **Setup Wizard** — Run `python setup.py` to configure in 30 seconds
 - **Folder Management** — Create, rename, delete folders to organize your knowledge base
 - **Move & Batch Move** — Move files between folders, single or batch select
-- **Browse & Search** — Navigate memory files by directory or full-text keyword search
+- **Browse & Search** — Navigate files by directory or full-text keyword search
 - **Markdown Rendering** — View files with syntax highlighting and table of contents
 - **YAML Frontmatter** — Edit metadata (title, tags, category, review status) via form UI
 - **Review Workflow** — Optional approve/reject pipeline for content quality control
 - **Customizable Categories** — Define your own category hierarchy via `categories.json`
-- **Auto Re-index** — Triggers `openclaw memory index` after edits for semantic search
+- **Template Packs** — Pre-built category templates for AI agents, dev notes, and personal use
+- **Auto Re-index** — Configurable post-edit command for search index rebuilds
 - **Dark Theme** — Responsive design that works on desktop and mobile
 - **Simple Auth** — Password-protected with configurable session lifetime
 - **Nginx Ready** — Built-in reverse proxy support for sub-path deployment
@@ -37,34 +40,38 @@ A lightweight web interface for managing [OpenClaw](https://github.com/nicepkg/o
 git clone https://github.com/YIING99/openclaw-memory-ui.git
 cd openclaw-memory-ui
 
-# 2. Install dependencies
+# 2. Run setup wizard
+python setup.py
+
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 3. Run
+# 4. Run
 python app.py
-# Visit http://127.0.0.1:5000 (default password: changeme)
+# Visit http://127.0.0.1:5000
 ```
 
 ## Configuration
 
-All settings are controlled via environment variables. Copy `.env.example` to `.env` and customize:
+All settings are controlled via environment variables. Run `python setup.py` for interactive setup, or copy `.env.example` to `.env` and customize:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `MEMORY_DIR` | `~/.openclaw/workspace/memory` | Path to your memory/ directory |
-| `OPENCLAW_DIR` | `~/.openclaw` | Path to OpenClaw installation |
-| `OPENCLAW_HOME` | `~` | HOME for re-index subprocess |
+| `LANGUAGE` | `en` | UI language (`en`, `zh`, or add your own) |
+| `MEMORY_DIR` | `~/memory` | Path to your markdown files directory |
 | `MEMORY_UI_PASSWORD_HASH` | sha256("changeme") | SHA256 hash of your password |
 | `MEMORY_UI_SECRET_KEY` | (default) | Flask session secret key |
 | `SESSION_LIFETIME_HOURS` | `72` | Session expiry in hours |
 | `APP_TITLE` | `Memory UI` | Brand name shown in navbar & login |
-| `APP_SUBTITLE` | `OpenClaw Knowledge Base` | Subtitle shown in footer & login |
+| `APP_SUBTITLE` | `Markdown Knowledge Base` | Subtitle shown in footer & login |
 | `ENABLE_REVIEW` | `true` | Enable review workflow (`true`/`false`) |
-| `PORT` | `5000` | Dev server port |
-| `BIND` | `127.0.0.1:5000` | Gunicorn bind address |
-| `WORKERS` | `2` | Gunicorn worker count |
-| `REINDEX_COMMAND` | `npx openclaw memory index --force` | Shell command to run after edits (set empty to disable) |
+| `REVIEW_STATUSES` | `pending,in_review,...` | Comma-separated review status values |
+| `APPROVED_STATUSES` | `approved,published` | Which statuses count as "approved" |
+| `DRAFTS_FOLDER` | `drafts` | Folder name for drafts |
+| `REINDEX_COMMAND` | (empty) | Shell command to run after edits |
 | `REINDEX_TIMEOUT` | `120` | Re-index command timeout (seconds) |
+| `OPENCLAW_DIR` | (empty) | Path to OpenClaw installation (if using) |
+| `OPENCLAW_HOME` | `~` | HOME for re-index subprocess |
 
 ### Generate Password Hash
 
@@ -88,25 +95,18 @@ Edit `categories.json` to define your own category hierarchy:
 }
 ```
 
-- **prefix** — ID prefix for new files (e.g. `NOTE-001`)
-- **categories** — First-level categories under this source
-- **subcategories** — Second-level categories (optional)
-
-Set `categories.json` to `{}` (empty object) to disable the category system entirely — the edit form will show only title, tags, and content.
+Or use a pre-built template from `presets/`:
+- **ai-agent** — AI agent memory knowledge base (Conversations/Knowledge/Learnings)
+- **dev-notes** — Developer notes (Projects/TIL/References)
+- **personal** — Personal knowledge base (Notes/Resources)
 
 ## Production Deployment
 
 ### With Gunicorn + Nginx
 
 ```bash
-# Install
 pip install -r requirements.txt
-
-# Run with gunicorn
 gunicorn -c gunicorn.conf.py app:app
-
-# Or use the deploy script
-bash deploy/deploy.sh
 ```
 
 See `deploy/` directory for:
@@ -122,6 +122,13 @@ systemctl --user daemon-reload
 systemctl --user enable --now memory-ui
 ```
 
+## Use Cases
+
+- **AI Agent Memory** — Manage knowledge files for [OpenClaw](https://github.com/nicepkg/openclaw) or other AI agent frameworks. Set `REINDEX_COMMAND` to rebuild your vector index after edits.
+- **Dev Notes** — Personal technical knowledge base with full-text search
+- **Content Pipeline** — Use the review workflow to manage content approval before publishing
+- **Team Wiki** — Lightweight alternative to heavy wiki software for small teams
+
 ## Architecture
 
 ```
@@ -133,15 +140,16 @@ systemctl --user enable --now memory-ui
                     ┌───────────────────┼───────────────────┐
                     │                   │                   │
               ┌─────▼─────┐     ┌──────▼──────┐    ┌──────▼──────┐
-              │ memory/   │     │ _index.json │    │  openclaw   │
-              │ *.md files│     │ (file index)│    │ memory index│
+              │ memory/   │     │ _index.json │    │  reindex    │
+              │ *.md files│     │ (file index)│    │  (optional) │
               └───────────┘     └─────────────┘    └─────────────┘
 ```
 
-- **memory/*.md** — Markdown files with YAML frontmatter (your knowledge base)
-- **memory/\<folder\>/*.md** — Files organized in subdirectories (folders). OpenClaw indexes recursively.
-- **_index.json** — Auto-generated file index for fast browsing (stores relative paths)
-- **openclaw memory index** — Triggered after edits to update semantic search vectors
+## Adding a New Language
+
+1. Copy `locales/en.json` to `locales/<code>.json`
+2. Translate all values (keep keys unchanged)
+3. Set `LANGUAGE=<code>` in `.env`
 
 ## License
 
@@ -155,18 +163,19 @@ KING
 
 ## 中文说明
 
-OpenClaw Memory Web UI 是一个轻量级的 Web 界面，用于管理 [OpenClaw](https://github.com/nicepkg/openclaw) 的 memory/ 知识库文件。
+Memory Web UI 是一个轻量级的 Web 界面，用于管理 Markdown 知识库文件。
 
 ### 功能特性
 
+- **多语言支持** — 内置中英文，可自行添加更多语言
+- **一键配置** — 运行 `python setup.py` 30 秒完成配置
 - **文件夹管理** — 创建、重命名、删除文件夹，轻松组织知识库
 - **文件移动** — 单个或批量选择文件，在文件夹间自由移动
-- 浏览和搜索 memory/ 目录中的 .md 文件（支持子目录递归）
+- 浏览和搜索 .md 文件（支持子目录递归）
 - Markdown 渲染预览（支持代码高亮、目录）
 - 通过表单编辑 YAML frontmatter 元数据
 - 可选的审核工作流（通过/驳回）
-- 自定义分类体系（`categories.json`）
-- 编辑后自动触发 OpenClaw 向量索引重建
+- 自定义分类体系（`categories.json`）+ 预设模板
 - 深色主题，响应式设计，移动端友好
 - 简单密码认证
 
@@ -175,11 +184,23 @@ OpenClaw Memory Web UI 是一个轻量级的 Web 界面，用于管理 [OpenClaw
 ```bash
 git clone https://github.com/YIING99/openclaw-memory-ui.git
 cd openclaw-memory-ui
+python setup.py   # 交互式配置向导
 pip install -r requirements.txt
 python app.py
-# 访问 http://127.0.0.1:5000（默认密码: changeme）
+# 访问 http://127.0.0.1:5000
 ```
 
 ### 配置
 
-复制 `.env.example` 为 `.env`，修改其中的环境变量即可自定义所有配置。详见上方英文配置表。
+运行 `python setup.py` 进行交互式配置，或复制 `.env.example` 为 `.env` 手动修改。详见上方英文配置表。
+
+### 从 v1.1 升级
+
+如果你已在使用中文审核状态值，需要在 `.env` 中添加：
+
+```env
+LANGUAGE=zh
+REVIEW_STATUSES=待审核,审核中,已通过,需修改,已发布
+APPROVED_STATUSES=已通过,已发布
+DRAFTS_FOLDER=草稿箱
+```

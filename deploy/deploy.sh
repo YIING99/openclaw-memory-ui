@@ -1,20 +1,17 @@
 #!/bin/bash
-# OpenClaw Memory Web UI — Deployment Script
+# Memory Web UI — Deployment Script
 # Usage: bash deploy.sh
 set -e
 
-echo "=== OpenClaw Memory Web UI Deployment ==="
+echo "=== Memory Web UI Deployment ==="
 echo ""
 
 # Configuration
 read -rp "Install directory [/opt/memory-ui]: " INSTALL_DIR
 INSTALL_DIR="${INSTALL_DIR:-/opt/memory-ui}"
 
-read -rp "Memory directory [~/.openclaw/workspace/memory]: " MEMORY_DIR
-MEMORY_DIR="${MEMORY_DIR:-$HOME/.openclaw/workspace/memory}"
-
-read -rp "OpenClaw directory [~/.openclaw]: " OPENCLAW_DIR
-OPENCLAW_DIR="${OPENCLAW_DIR:-$HOME/.openclaw}"
+read -rp "Memory directory [~/memory]: " MEMORY_DIR
+MEMORY_DIR="${MEMORY_DIR:-$HOME/memory}"
 
 read -rp "Bind address [127.0.0.1:5000]: " BIND_ADDR
 BIND_ADDR="${BIND_ADDR:-127.0.0.1:5000}"
@@ -34,7 +31,6 @@ echo ""
 echo "--- Configuration Summary ---"
 echo "Install dir:  $INSTALL_DIR"
 echo "Memory dir:   $MEMORY_DIR"
-echo "OpenClaw dir: $OPENCLAW_DIR"
 echo "Bind address: $BIND_ADDR"
 echo "-----------------------------"
 echo ""
@@ -47,7 +43,9 @@ fi
 # Create install directory
 echo "Creating $INSTALL_DIR ..."
 sudo mkdir -p "$INSTALL_DIR"
-sudo cp -r app.py config.py categories.json gunicorn.conf.py requirements.txt templates/ static/ "$INSTALL_DIR/"
+sudo cp -r app.py config.py gunicorn.conf.py requirements.txt templates/ static/ locales/ "$INSTALL_DIR/"
+# Copy categories.json if it exists (optional, instance-specific)
+[ -f categories.json ] && sudo cp categories.json "$INSTALL_DIR/"
 sudo chown -R "$USER:$USER" "$INSTALL_DIR"
 
 # Create virtual environment
@@ -57,16 +55,15 @@ python3 -m venv "$INSTALL_DIR/venv"
 
 # Create .env file
 cat > "$INSTALL_DIR/.env" << EOF
+LANGUAGE=en
 MEMORY_DIR=$MEMORY_DIR
-OPENCLAW_DIR=$OPENCLAW_DIR
-OPENCLAW_HOME=$HOME
 MEMORY_UI_PASSWORD_HASH=$PASSWORD_HASH
 MEMORY_UI_SECRET_KEY=$SECRET_KEY
 BIND=$BIND_ADDR
 WORKERS=2
 ENABLE_REVIEW=true
 APP_TITLE=Memory UI
-APP_SUBTITLE=OpenClaw Knowledge Base
+APP_SUBTITLE=Markdown Knowledge Base
 EOF
 
 echo ""

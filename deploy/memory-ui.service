@@ -1,4 +1,4 @@
-# OpenClaw Memory Web UI — systemd service template
+# Memory Web UI — systemd service template
 # Copy to: ~/.config/systemd/user/memory-ui.service (user mode)
 # Or to: /etc/systemd/system/memory-ui.service (system mode, change User/Group)
 #
@@ -9,7 +9,7 @@
 #   systemctl --user status memory-ui
 
 [Unit]
-Description=OpenClaw Memory Web UI
+Description=Memory Web UI
 After=network.target
 
 [Service]
