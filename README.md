@@ -33,6 +33,14 @@ A lightweight web interface for managing markdown knowledge base files. Browse, 
 - **Simple Auth** — Password-protected with configurable session lifetime
 - **Nginx Ready** — Built-in reverse proxy support for sub-path deployment
 
+## AI Agent Auto-Install
+
+Have an AI assistant (e.g. OpenClaw, Claude, GPT)? Just send it this message:
+
+> Install Memory Web UI on my VPS. Docs: https://github.com/YIING99/openclaw-memory-ui/blob/main/AGENT_INSTALL.md — password: YOUR_PASSWORD, language: zh
+
+The repo includes `AGENT_INSTALL.md` (step-by-step guide for AI agents) and `memory-ui.json` (machine-readable manifest) so any capable AI agent can auto-install it.
+
 ## Quick Start
 
 ```bash
@@ -178,6 +186,12 @@ Memory Web UI 是一个轻量级的 Web 界面，用于管理 Markdown 知识库
 - 自定义分类体系（`categories.json`）+ 预设模板
 - 深色主题，响应式设计，移动端友好
 - 简单密码认证
+
+### AI 助手一键安装
+
+把下面这段话发给你的 AI 助手（OpenClaw 龙虾、Claude 等），即可自动安装：
+
+> 帮我在 VPS 上安装 Memory Web UI。安装文档：https://github.com/YIING99/openclaw-memory-ui/blob/main/AGENT_INSTALL.md 密码设 YOUR_PASSWORD 语言用中文
 
 ### 快速开始
 

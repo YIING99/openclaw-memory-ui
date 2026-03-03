@@ -2,6 +2,32 @@
 
 > This document is optimized for AI agents. For human-readable docs, see [README.md](README.md).
 
+## Prompt Templates (Send to Your AI Agent)
+
+**Simple — copy and send:**
+
+```
+Install Memory Web UI on my VPS.
+Docs: https://github.com/YIING99/openclaw-memory-ui/blob/main/AGENT_INSTALL.md
+Manifest: https://raw.githubusercontent.com/YIING99/openclaw-memory-ui/main/memory-ui.json
+Password: SET_YOUR_PASSWORD
+Language: zh
+```
+
+**With OpenClaw integration:**
+
+```
+Install Memory Web UI on my VPS.
+Docs: https://github.com/YIING99/openclaw-memory-ui/blob/main/AGENT_INSTALL.md
+Manifest: https://raw.githubusercontent.com/YIING99/openclaw-memory-ui/main/memory-ui.json
+Password: SET_YOUR_PASSWORD
+Language: zh
+Auto-detect OpenClaw memory directory and use it as --memory-dir.
+If Nginx is available, configure /memory/ sub-path.
+```
+
+---
+
 ## What This Is
 
 Memory Web UI is a web interface for managing markdown (.md) knowledge base files. It provides browse, search, edit, folder management, and optional review workflow with a dark-themed responsive UI.
