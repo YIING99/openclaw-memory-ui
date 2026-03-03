@@ -1,0 +1,32 @@
+{
+  "Projects": {
+    "prefix": "PRJ",
+    "categories": ["Frontend", "Backend", "Infrastructure", "Mobile"],
+    "subcategories": {
+      "Frontend": ["React", "Vue", "CSS", "Accessibility"],
+      "Backend": ["API Design", "Database", "Auth", "Performance"],
+      "Infrastructure": ["CI/CD", "Docker", "Cloud", "Monitoring"],
+      "Mobile": ["iOS", "Android", "Flutter", "React Native"]
+    }
+  },
+  "TIL": {
+    "prefix": "TIL",
+    "categories": ["Languages", "Tools", "Concepts", "Debugging"],
+    "subcategories": {
+      "Languages": ["Python", "JavaScript", "Go", "Rust"],
+      "Tools": ["Git", "Docker", "CLI", "IDE"],
+      "Concepts": ["Architecture", "Algorithms", "Security", "Testing"],
+      "Debugging": ["Root Cause", "Workaround", "Performance"]
+    }
+  },
+  "References": {
+    "prefix": "REF",
+    "categories": ["Commands", "Configs", "Snippets", "Links"],
+    "subcategories": {
+      "Commands": ["Shell", "Git", "Docker", "Package Managers"],
+      "Configs": ["Environment", "Build", "Deploy", "IDE"],
+      "Snippets": ["Utilities", "Patterns", "Templates"],
+      "Links": ["Docs", "Articles", "Tools", "Libraries"]
+    }
+  }
+}

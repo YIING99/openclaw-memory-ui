@@ -1,0 +1,29 @@
+{
+  "Conversations": {
+    "prefix": "CONV",
+    "categories": ["User Queries", "Tool Calls", "Responses"],
+    "subcategories": {
+      "User Queries": ["Questions", "Commands", "Feedback"],
+      "Tool Calls": ["Search", "Code", "File Operations"],
+      "Responses": ["Answers", "Summaries", "Suggestions"]
+    }
+  },
+  "Knowledge": {
+    "prefix": "KB",
+    "categories": ["Facts", "Procedures", "Patterns"],
+    "subcategories": {
+      "Facts": ["Domain Knowledge", "Definitions", "References"],
+      "Procedures": ["Workflows", "Troubleshooting", "Setup Guides"],
+      "Patterns": ["Best Practices", "Anti-Patterns", "Templates"]
+    }
+  },
+  "Learnings": {
+    "prefix": "LRN",
+    "categories": ["Insights", "Mistakes", "Improvements"],
+    "subcategories": {
+      "Insights": ["User Behavior", "System Behavior", "Edge Cases"],
+      "Mistakes": ["Misunderstandings", "Errors", "Timeouts"],
+      "Improvements": ["Prompts", "Tools", "Workflows"]
+    }
+  }
+}

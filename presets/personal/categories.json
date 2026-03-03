@@ -1,0 +1,22 @@
+{
+  "Notes": {
+    "prefix": "NOTE",
+    "categories": ["Ideas", "Journal", "Reading", "Learning"],
+    "subcategories": {
+      "Ideas": ["Projects", "Writing", "Business", "Creative"],
+      "Journal": ["Daily", "Weekly", "Reflections"],
+      "Reading": ["Books", "Articles", "Podcasts", "Videos"],
+      "Learning": ["Courses", "Tutorials", "Practice"]
+    }
+  },
+  "Resources": {
+    "prefix": "RES",
+    "categories": ["Bookmarks", "Templates", "Contacts", "Tools"],
+    "subcategories": {
+      "Bookmarks": ["Reference", "Inspiration", "Useful"],
+      "Templates": ["Writing", "Planning", "Communication"],
+      "Contacts": ["People", "Organizations", "Communities"],
+      "Tools": ["Software", "Services", "Hardware"]
+    }
+  }
+}
